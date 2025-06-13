@@ -13,6 +13,9 @@ app = FastAPI(title="LoadAgent API")
 
 # API Key authentication
 API_KEY = os.environ.get("API_KEY")
+if not API_KEY:
+    raise ValueError("API_KEY environment variable is not set")
+
 api_key_header = APIKeyHeader(name="X-API-Key")
 
 async def get_api_key(api_key: str = Security(api_key_header)):
@@ -51,9 +54,10 @@ async def health_check():
     """Health check endpoint for Render."""
     return {"status": "ok"}
 
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://your-happyrobot-domain.com"],
+    allow_origins=["https://your-happyrobot-domain.com"],  # Update this with your actual HappyRobot domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

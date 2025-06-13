@@ -10,6 +10,7 @@ class CallStatus(str, Enum):
     NOT_ELIGIBLE = "NOT ELIGIBLE"
 
 class Load(SQLModel, table=True):
+    """Model for load data."""
     __tablename__ = "loads"
     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -24,18 +25,20 @@ class Load(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class Call(SQLModel, table=True):
+    """Model for call data."""
     __tablename__ = "calls"
     
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int = Field(default=None, primary_key=True)
     mc_number: str
     load_id: UUID = Field(foreign_key="loads.id")
-    status: CallStatus
+    status: str = Field(..., description="Status of the call: BOOKED, NO DEAL, NOT ELIGIBLE")
     negotiated_rate: Optional[float] = None
     sentiment: Optional[str] = None
     recorded_at: datetime = Field(default_factory=datetime.utcnow)
 
 # Pydantic models for API requests/responses
 class LoadSearch(SQLModel):
+    """Schema for load search request."""
     origin: str
     dest: str
     equipment: str
@@ -56,5 +59,13 @@ class CallCreate(SQLModel):
     mc_number: str
     load_id: UUID
     status: CallStatus
+    negotiated_rate: Optional[float] = None
+    sentiment: Optional[str] = None
+
+class CallLog(SQLModel):
+    """Schema for call logging request."""
+    mc_number: str
+    load_id: UUID
+    status: str
     negotiated_rate: Optional[float] = None
     sentiment: Optional[str] = None
