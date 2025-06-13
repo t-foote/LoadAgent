@@ -1,0 +1,38 @@
+services:
+  # FastAPI backend for load search and call logging
+  - type: web_service
+    name: loads-api
+    env: docker
+    region: oregon
+    branch: main
+    dockerfilePath: Dockerfile
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: loads-db
+          property: connectionString
+      - key: API_KEY
+        value: "${API_KEY}"  # Supplied via Render Environment Variables
+
+  # Streamlit dashboard for metrics
+  - type: web_service
+    name: sales-dashboard
+    env: docker
+    region: oregon
+    branch: main
+    dockerfilePath: dash/Dockerfile
+    startCommand: streamlit run app.py --server.port 8501
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: loads-db
+          property: connectionString
+
+databases:
+  - type: postgres
+    name: loads-db
+    plan: free
+    version: 15
