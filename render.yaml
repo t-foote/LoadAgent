@@ -14,7 +14,7 @@ services:
           name: loads-db
           property: connectionString
       - key: API_KEY
-        value: "${API_KEY}"  # Supplied via Render Environment Variables
+        value: "${API_KEY}"  # Define API_KEY in Render’s Environment settings
 
   # Streamlit dashboard for metrics
   - type: web_service
