@@ -35,7 +35,15 @@ async def search_loads(
     api_key: str = Depends(get_api_key)
 ):
     """Search for the best available load based on origin, destination and equipment type."""
-    load = await get_best_load(session, request.origin, request.dest, request.equipment)
+    # Create a LoadSearch object
+    search = LoadSearch(
+        origin=request.origin,
+        dest=request.dest,
+        equipment=request.equipment
+    )
+    
+    # Pass the search object to get_best_load
+    load = await get_best_load(session, search)
     if not load:
         return None
     return load
