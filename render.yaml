@@ -18,7 +18,7 @@ services:
           name: loads-db
           property: connectionString
       - key: API_KEY
-        value: "${API_KEY}"   
+        value: "randomkey123"   
 
   # Streamlit dashboard for metrics
   - type: web
