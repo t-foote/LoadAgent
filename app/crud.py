@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from uuid import UUID
@@ -6,22 +7,13 @@ from .models import Call, LoadResponse, Load, CallLog, LoadSearch
 
 async def get_best_load(session: AsyncSession, search: LoadSearch) -> Load:
     """Get the best load matching the search criteria."""
-    query = text("""
-        SELECT * FROM best_load 
-        WHERE origin_city = :origin 
-        AND dest_city = :dest 
-        AND equipment = :equipment
-        ORDER BY rpm DESC 
-        LIMIT 1
-    """)
-    result = await session.execute(
-        query,
-        {
-            "origin": search.origin,
-            "dest": search.dest,
-            "equipment": search.equipment
-        }
-    )
+    query = select(Load).where(
+        Load.origin_city == search.origin,
+        Load.dest_city == search.dest,
+        Load.equipment == search.equipment
+    ).order_by(Load.rpm.desc()).limit(1)
+    
+    result = await session.execute(query)
     return result.scalar_one_or_none()
 
 
