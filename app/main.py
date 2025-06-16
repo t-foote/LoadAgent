@@ -28,7 +28,7 @@ async def get_api_key(api_key: str = Security(api_key_header)):
         detail="Invalid API Key"
     )
 
-@app.post("/search_loads", response_model=Optional[LoadResponse])
+@app.get("/search_loads", response_model=Optional[LoadResponse])
 async def search_loads(
     request: LoadSearch,
     session: AsyncSession = Depends(get_session),

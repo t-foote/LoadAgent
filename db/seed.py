@@ -1,4 +1,5 @@
 import os
+import sys
 import csv
 from datetime import datetime, timedelta
 import random
@@ -6,12 +7,14 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 # Get database URL from environment variable
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/loads")
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 # Create engine and session
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
+
+NUMBER_OF_LOADS = int(sys.argv[1]) if (len(sys.argv) > 1) else 20 
 
 def generate_sample_loads():
     """Generate sample load data."""
@@ -28,7 +31,7 @@ def generate_sample_loads():
     loads = []
     base_date = datetime.now()
     
-    for _ in range(20):  # Generate 20 sample loads
+    for _ in range(NUMBER_OF_LOADS):  # Generate 20 sample loads
         origin_city, origin_state = random.choice(cities)
         dest_city, dest_state = random.choice([c for c in cities if c != (origin_city, origin_state)])
         
