@@ -1,13 +1,21 @@
 import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.engine.url import make_url
 from sqlmodel import SQLModel
 
 # Get database URL from environment variable
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/loads")
+_raw_url = os.getenv("DATABASE_URL")
+if not _raw_url:
+    raise ValueError("DATABASE_URL environment variable is not set")
 
-# Create async engine
-engine = create_async_engine(DATABASE_URL, echo=True)
+url = make_url(_raw_url)
+if url.drivername == "postgresql":
+    url = url.set(drivername="postgresql+asyncpg")
+
+engine = create_async_engine(url.render_as_string(hide_password=False),
+                             echo=True)
+
 
 # Create async session factory
 async_session = sessionmaker(
