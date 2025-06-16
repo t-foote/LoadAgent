@@ -69,3 +69,16 @@ class CallLog(SQLModel):
     status: str
     negotiated_rate: Optional[float] = None
     sentiment: Optional[str] = None
+
+class BestLoad(SQLModel, table=True):   # note: table=True maps to an existing view
+    __tablename__ = "best_load"
+
+    id           : str = Field(primary_key=True)
+    origin_city  : str
+    dest_city    : str
+    equipment    : str
+    pickup_ts    : str
+    distance_mi  : float
+    offer_rate   : float
+    rpm          : float
+    rank         : int
