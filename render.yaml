@@ -2,10 +2,12 @@ services:
   # FastAPI backend for load search and call logging
   - type: web_service
     name: loads-api
-    env: docker
     region: oregon
     branch: main
     dockerfilePath: Dockerfile
+    buildCommand: |
+      psql "$DATABASE_URL" -f db/schema.sql
+      python db/seed.py
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
     plan: free
     envVars:
@@ -14,12 +16,11 @@ services:
           name: loads-db
           property: connectionString
       - key: API_KEY
-        value: "${API_KEY}"  # Define API_KEY in Render’s Environment settings
+        value: "${API_KEY}"  # Define API_KEY in Render's Environment settings
 
   # Streamlit dashboard for metrics
   - type: web_service
     name: sales-dashboard
-    env: docker
     region: oregon
     branch: main
     dockerfilePath: dash/Dockerfile
@@ -32,7 +33,5 @@ services:
           property: connectionString
 
 databases:
-  - type: postgres
-    name: loads-db
+  - name: loads-db
     plan: free
-    version: 15

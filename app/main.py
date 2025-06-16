@@ -16,6 +16,8 @@ API_KEY = os.environ.get("API_KEY")
 if not API_KEY:
     raise ValueError("API_KEY environment variable is not set")
 
+HAPPYROBOT_DOMAIN = "https://app.happyrobot.ai"
+
 api_key_header = APIKeyHeader(name="X-API-Key")
 
 async def get_api_key(api_key: str = Security(api_key_header)):
@@ -45,7 +47,7 @@ async def create_call_log(
     api_key: str = Depends(get_api_key)
 ):
     """Log details of a call with a carrier including negotiation outcome."""
-    call_data = Call.from_orm(request)
+    call_data = Call.model_validate(request)
     result = await log_call(session, call_data)
     return result
 
@@ -57,7 +59,7 @@ async def health_check():
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://your-happyrobot-domain.com"],  # Update this with your actual HappyRobot domain
+    allow_origins=[HAPPYROBOT_DOMAIN], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
